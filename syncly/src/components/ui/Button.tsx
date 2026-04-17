@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, ViewStyle } from "react-native";
 
 type Variant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 type Size = "default" | "sm" | "lg" | "icon";
@@ -11,6 +11,7 @@ interface ButtonProps {
   disabled?: boolean;
   children?: React.ReactNode;
   onPress?: () => void;
+  style?: ViewStyle;
 }
 
 const variants: Record<Variant, string> = {
@@ -36,11 +37,13 @@ export function Button({
   disabled,
   children,
   onPress,
+  style,
 }: ButtonProps) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      style={style}
       className={cn(
         "flex flex-row items-center justify-center rounded-md active:opacity-80",
         variants[variant],
