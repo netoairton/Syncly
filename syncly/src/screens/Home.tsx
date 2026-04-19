@@ -32,16 +32,16 @@ export default function Home() {
     <ScrollView className="flex-1 bg-white" contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20 }}>
       <View className="px-4 py-6">
         {/* Header */}
-        <Text className="text-4xl font-bold text-gray-900 mb-8">
+        <Text>
           Syncly
         </Text>
 
         {/* Feelings Section */}
-        <Card className="mb-8 bg-blue-50 border-blue-100 rounded-[32px] p-5">
+        <Card className="mb-8 bg-blue-50 border-blue-100 rounded-[32px] p-5" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderWidth: 1, borderColor: "rgba(14, 165, 171, 0.16)",  backgroundColor: "lightblue",
+              borderRadius: 20, padding: 15, gap: 15 }}>
           <Text className="text-lg font-semibold text-gray-900 mb-6 text-center">
             How are you feeling today?
           </Text>
-
           <FlatList
             data={feelings}
             keyExtractor={(item) => item.value}
@@ -49,21 +49,28 @@ export default function Home() {
             scrollEnabled={false}
             columnWrapperStyle={{
               justifyContent: "space-between",
-              marginBottom: 12,
             }}
             renderItem={({ item }) => {
+              
               const Icon = item.icon;
 
               return (
                 <Pressable
                   onPress={() => goToCoach(item.value)}
                   style={{
-                    flex: 1,
-                    maxWidth: "23%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-evenly",
+                    width: 70,
+                    height: 100,
                     borderWidth: 1,
                     borderColor: "rgba(14, 165, 171, 0.16)",
+                    padding: 10,
+                    margin: 5,
+                    borderRadius: 20,
+                    backgroundColor: "rgba(14, 165, 171, 0.16)",
+
                   }}
-                  className="items-center justify-center rounded-3xl bg-white py-4"
                 >
                   <View className="w-12 h-12 rounded-2xl bg-blue-50 items-center justify-center">
                     <Icon size={24} color="#0ea5ab" strokeWidth={1.5} />
@@ -84,7 +91,8 @@ export default function Home() {
 
 
         {/* Google Calendar Synced */}
-        <Card className="mb-4 bg-blue-50">
+        <Card style={{ borderWidth: 1, borderColor: "rgba(14, 165, 171, 0.16)",  backgroundColor: "lightblue",
+              borderRadius: 20, padding: 15, gap: 15 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
               <Calendar size={28} color="#0ea5ab" />
