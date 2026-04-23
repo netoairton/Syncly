@@ -1,157 +1,237 @@
 import { useRouter } from "expo-router";
-import { FlatList, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Progress } from "@/components/ui/Progress";
 
-import { Battery, Calendar, CheckCircle2, Circle, Clock, Frown, Heart, RotateCcw, Smile, Zap } from "lucide-react-native";
+import {
+  Battery,
+  Calendar,
+  CheckCircle2,
+  Circle,
+  Clock,
+  Frown,
+  Smile,
+  Zap,
+} from "lucide-react-native";
+
+/** Paleta alinhada ao visual Syncly (teal escuro + fundos menta claros) */
+const colors = {
+  ink: "#1A4D4E",
+  inkMuted: "#3D6668",
+  inkSoft: "#5C7A7C",
+  page: "#FFFFFF",
+  cardMint: "#F0F9F9",
+  cardMintEdge: "rgba(26, 77, 78, 0.12)",
+  circleLow: "#FFE8EC",
+  circleLowIcon: "#C93B48",
+  circleHigh: "#E0F4FF",
+  circleHighIcon: "#1A4D4E",
+  circlePain: "#E8EBED",
+  circlePainIcon: "#6B7280",
+  circleGreat: "#D6F5F2",
+  circleGreatIcon: "#1A4D4E",
+  mintIconWell: "#E8F6F6",
+  borderLight: "#E3EEED",
+  progressTrack: "#E0EFEE",
+  progressFill: "#2A9D94",
+  accentButton: "#0F766E",
+};
+
+function DottedRingLogo() {
+  const n = 12;
+  const r = 18;
+  const cx = 22;
+  const cy = 22;
+  return (
+    <View style={styles.dottedRingWrap}>
+      {[...Array(n)].map((_, i) => {
+        const rad = (i / n) * Math.PI * 2 - Math.PI / 2;
+        return (
+          <View
+            key={i}
+            style={[
+              styles.dottedParticle,
+              {
+                left: cx + r * Math.cos(rad) - 1.5,
+                top: cy + r * Math.sin(rad) - 1.5,
+              },
+            ]}
+          />
+        );
+      })}
+    </View>
+  );
+}
+
+function SynclyHeader() {
+  return (
+    <View style={styles.headerBlock}>
+      <View style={styles.diamondOuter}>
+        <View style={styles.diamond}>
+          <View style={styles.diamondInner}>
+            <DottedRingLogo />
+          </View>
+        </View>
+      </View>
+      <Text style={styles.brandWord}>SYNCLY</Text>
+      <Text style={styles.tagline}>BEM-ESTAR CONTÍNUO</Text>
+    </View>
+  );
+}
 
 export default function Home() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const feelings = [
-    { label: "Low Energy", icon: Battery, value: "low-energy" },
-    { label: "High Energy", icon: Heart, value: "high-energy" },
-    { label: "Pain", icon: Frown, value: "pain" },
-    { label: "Great", icon: Smile, value: "great" },
+    {
+      label: "Pouca energia",
+      value: "low-energy",
+      Icon: Battery,
+      circleBg: colors.circleLow,
+      iconColor: colors.circleLowIcon,
+    },
+    {
+      label: "Muita energia",
+      value: "high-energy",
+      Icon: Zap,
+      circleBg: colors.circleHigh,
+      iconColor: colors.circleHighIcon,
+    },
+    {
+      label: "Dor",
+      value: "pain",
+      Icon: Frown,
+      circleBg: colors.circlePain,
+      iconColor: colors.circlePainIcon,
+    },
+    {
+      label: "Ótimo",
+      value: "great",
+      Icon: Smile,
+      circleBg: colors.circleGreat,
+      iconColor: colors.circleGreatIcon,
+    },
   ];
 
   const exercises = [
-    { name: "Push-ups", sets: 3, reps: 12, completed: true },
-    { name: "Dumbbell Rows", sets: 3, reps: 10, completed: true },
-    { name: "Shoulder Press", sets: 3, reps: 12, completed: false },
-    { name: "Bicep Curls", sets: 3, reps: 15, completed: false },
+    { name: "Flexões", sets: 3, reps: 12, completed: true },
+    { name: "Remada com halteres", sets: 3, reps: 10, completed: true },
+    { name: "Desenvolvimento de ombros", sets: 3, reps: 12, completed: false },
+    { name: "Rosca bíceps", sets: 3, reps: 15, completed: false },
   ];
+
+  const completed = exercises.filter((e) => e.completed).length;
+  const total = exercises.length;
+  const progressPct = (completed / total) * 100;
 
   function goToCoach(feeling: string) {
     router.push(`/coach?initialFeeling=${feeling}`);
   }
 
   return (
-    <ScrollView className="flex-1 bg-white" contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20 }}>
-      <View className="px-4 py-6">
-        {/* Header */}
-        <Text>
-          Syncly
-        </Text>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.page }}
+      contentContainerStyle={{
+        paddingHorizontal: 20,
+        paddingTop: Math.max(insets.top, 12) + 8,
+        paddingBottom: 28,
+      }}
+      showsVerticalScrollIndicator={false}
+    >
+      <SynclyHeader />
 
-        {/* Feelings Section */}
-        <Card className="mb-8 bg-blue-50 border-blue-100 rounded-[32px] p-5" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderWidth: 1, borderColor: "rgba(14, 165, 171, 0.16)",  backgroundColor: "lightblue",
-              borderRadius: 20, padding: 15, gap: 15 }}>
-          <Text className="text-lg font-semibold text-gray-900 mb-6 text-center">
-            How are you feeling today?
-          </Text>
-          <FlatList
-            data={feelings}
-            keyExtractor={(item) => item.value}
-            numColumns={4}
-            scrollEnabled={false}
-            columnWrapperStyle={{
-              justifyContent: "space-between",
-            }}
-            renderItem={({ item }) => {
-              
-              const Icon = item.icon;
+      {/* Cartão — Como está a sentir-se */}
+      <View style={styles.feelingCard}>
+        <Text style={styles.feelingTitle}>Como você está se sentindo hoje?</Text>
 
-              return (
-                <Pressable
-                  onPress={() => goToCoach(item.value)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-evenly",
-                    width: 70,
-                    height: 100,
-                    borderWidth: 1,
-                    borderColor: "rgba(14, 165, 171, 0.16)",
-                    padding: 10,
-                    margin: 5,
-                    borderRadius: 20,
-                    backgroundColor: "rgba(14, 165, 171, 0.16)",
-
-                  }}
-                >
-                  <View className="w-12 h-12 rounded-2xl bg-blue-50 items-center justify-center">
-                    <Icon size={24} color="#0ea5ab" strokeWidth={1.5} />
-                  </View>
-
-                  <Text className="text-xs font-medium mt-3 text-gray-700 text-center">
-                    {item.label}
-                  </Text>
-                </Pressable>
-              );
-            }}
-          />
-
-          <Text className="text-center text-sm text-gray-500 mt-4">
-            Tap a feeling to talk to your AI coach
-          </Text>
-        </Card>
-
-
-        {/* Google Calendar Synced */}
-        <Card style={{ borderWidth: 1, borderColor: "rgba(14, 165, 171, 0.16)",  backgroundColor: "lightblue",
-              borderRadius: 20, padding: 15, gap: 15 }}>
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center flex-1">
-              <Calendar size={28} color="#0ea5ab" />
-              <View className="ml-4 flex-1">
-                <Text className="text-base font-semibold text-gray-800">
-                  Google Calendar Synced
-                </Text>
-                <Text className="text-xs text-gray-600 mt-1">
-                  Last sync: 2 minutes ago
-                </Text>
-              </View>
-            </View>
-            <RotateCcw size={20} color="#0ea5ab" />
-          </View>
-        </Card>
-
-        {/* Today's Workout */}
-        <Card className="mb-4">
-          <View className="flex-row items-center justify-between mb-4">
-            <View className="flex-1">
-              <View className="flex-row items-center mb-2">
-                <Text className="text-xl font-bold text-gray-900">
-                  Today's Workout
-                </Text>
-                <Clock size={18} color="#0ea5ab" className="ml-2" />
-              </View>
-              <Text className="text-sm text-gray-600">
-                45 min • Upper Body Strength
-              </Text>
-            </View>
-            <View className="ml-2 bg-gray-100 px-3 py-1 rounded-full">
-              <Text className="text-xs font-bold text-gray-700">
-                2/4
-              </Text>
-            </View>
-          </View>
-
-          <Progress value={50} className="mb-4" />
-
-          {/* Exercises List */}
-          <View className="mb-4 -mx-4">
-            {exercises.map((exercise, index) => (
-              <View 
-                key={index} 
-                className="flex-row items-center px-4 py-3 bg-blue-50"
-                style={{ borderBottomWidth: index < exercises.length - 1 ? 1 : 0, borderBottomColor: "#e0f2fe" }}
+        <View style={styles.feelingRow}>
+          {feelings.map((item) => {
+            const Icon = item.Icon;
+            return (
+              <Pressable
+                key={item.value}
+                onPress={() => goToCoach(item.value)}
+                style={({ pressed }) => [styles.feelingItem, pressed && { opacity: 0.85 }]}
               >
-                <View className="flex-row items-center flex-1">
+                <View style={[styles.feelingCircle, { backgroundColor: item.circleBg }]}>
+                  <Icon size={26} color={item.iconColor} strokeWidth={2} />
+                </View>
+                <Text style={styles.feelingLabel}>{item.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <Text style={styles.feelingHint}>
+          Toque em um sentimento para falar com seu treinador de IA
+        </Text>
+      </View>
+
+      {/* Google Agenda — pílula */}
+      <View style={styles.calendarPill}>
+        <View style={styles.calendarIconWell}>
+          <Calendar size={22} color={colors.ink} strokeWidth={2} />
+        </View>
+        <View style={{ flex: 1, marginLeft: 14 }}>
+          <Text style={styles.calendarTitle}>Google Agenda sincronizada</Text>
+          <Text style={styles.calendarSub}>Última sincronização: há 2 minutos</Text>
+        </View>
+        <View style={styles.checkWell}>
+          <CheckCircle2 size={22} color={colors.progressFill} strokeWidth={2.2} />
+        </View>
+      </View>
+
+      {/* Treino de hoje */}
+      <View style={styles.workoutSection}>
+        <View style={styles.workoutSectionHeader}>
+          <Text style={styles.workoutSectionTitle}>Treino de hoje</Text>
+          <View style={styles.durationPill}>
+            <Clock size={16} color={colors.ink} strokeWidth={2} />
+            <Text style={[styles.durationText, { marginLeft: 6 }]}>45 min</Text>
+          </View>
+        </View>
+
+        <View style={styles.workoutInnerCard}>
+          <View style={styles.workoutInnerTop}>
+            <Text style={styles.workoutPlanTitle}>Força de membros superiores</Text>
+            <Text style={styles.workoutPlanMeta}>
+              {completed}/{total} exercícios
+            </Text>
+          </View>
+
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
+          </View>
+
+          <View style={styles.exerciseList}>
+            {exercises.map((exercise, index) => (
+              <View
+                key={exercise.name}
+                style={[
+                  styles.exerciseRow,
+                  index < exercises.length - 1 && styles.exerciseRowBorder,
+                ]}
+              >
+                <View style={styles.exerciseRowInner}>
                   {exercise.completed ? (
-                    <CheckCircle2 size={24} color="#0ea5ab" />
+                    <CheckCircle2 size={22} color={colors.progressFill} strokeWidth={2} />
                   ) : (
-                    <Circle size={24} color="#d1d5db" />
+                    <Circle size={22} color="#CBD5E1" strokeWidth={2} />
                   )}
-                  <View className="ml-3 flex-1">
-                    <Text className={`text-base font-medium ${exercise.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
+                  <View style={{ flex: 1, marginLeft: 12 }}>
+                    <Text
+                      style={[
+                        styles.exerciseName,
+                        exercise.completed && styles.exerciseNameDone,
+                      ]}
+                    >
                       {exercise.name}
                     </Text>
-                    <Text className="text-xs text-gray-600 mt-1">
-                      {exercise.sets} sets × {exercise.reps} reps
+                    <Text style={styles.exerciseDetail}>
+                      {exercise.sets} séries × {exercise.reps} repetições
                     </Text>
                   </View>
                 </View>
@@ -159,40 +239,302 @@ export default function Home() {
             ))}
           </View>
 
-          <Button 
-            className="w-full"
-            style={{ backgroundColor: "#0d9488", borderRadius: 8, paddingVertical: 12 }}
+          <Button
+            style={styles.ctaButton}
             onPress={() => router.push("/coach")}
           >
-            <Text className="text-white font-semibold text-base">Continue Workout</Text>
+            <Text style={styles.ctaButtonText}>Continuar treino</Text>
           </Button>
-        </Card>
-
-        {/* This Week's Progress */}
-        <Card className="mb-4">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-xl font-bold text-gray-900">
-              This Week's Progress
-            </Text>
-            <Zap size={24} color="#0ea5ab" />
-          </View>
-
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-sm font-medium text-gray-700">
-              Workouts completed
-            </Text>
-            <Text className="text-base font-bold text-teal-600">
-              3/5
-            </Text>
-          </View>
-
-          <Progress value={60} className="mb-3" />
-
-          <Text className="text-sm font-medium text-teal-600">
-            Great job! You're on track to meet your weekly goal.
-          </Text>
-        </Card>
+        </View>
       </View>
+
+      {/* Progresso semanal — mesmo idioma visual */}
+      <Card className="mb-2 border-0" style={styles.weekCard}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <Text style={styles.workoutSectionTitle}>Progresso desta semana</Text>
+          <Zap size={22} color={colors.progressFill} strokeWidth={2} />
+        </View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
+          <Text style={styles.calendarSub}>Treinos concluídos</Text>
+          <Text style={styles.workoutPlanMeta}>3/5</Text>
+        </View>
+        <View style={styles.progressTrack}>
+          <View style={[styles.progressFill, { width: "60%" }]} />
+        </View>
+        <Text style={styles.weekEncouragement}>
+          Muito bem! Você está no caminho para cumprir a meta semanal.
+        </Text>
+      </Card>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  headerBlock: {
+    alignItems: "center",
+    marginBottom: 28,
+  },
+  diamondOuter: {
+    marginBottom: 14,
+  },
+  diamond: {
+    width: 76,
+    height: 76,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.ink,
+    backgroundColor: "#FAFEFE",
+    transform: [{ rotate: "45deg" }],
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  diamondInner: {
+    width: 52,
+    height: 52,
+    transform: [{ rotate: "-45deg" }],
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dottedRingWrap: {
+    width: 44,
+    height: 44,
+    position: "relative",
+  },
+  dottedParticle: {
+    position: "absolute",
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: colors.ink,
+  },
+  brandWord: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: colors.ink,
+    letterSpacing: 2,
+  },
+  tagline: {
+    marginTop: 4,
+    fontSize: 11,
+    fontWeight: "600",
+    color: colors.inkMuted,
+    letterSpacing: 1.2,
+  },
+  feelingCard: {
+    backgroundColor: colors.cardMint,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.cardMintEdge,
+    paddingVertical: 22,
+    paddingHorizontal: 18,
+    marginBottom: 16,
+  },
+  feelingTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: colors.ink,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  feelingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 0,
+  },
+  feelingItem: {
+    alignItems: "center",
+    width: "22%",
+    maxWidth: 76,
+  },
+  feelingCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  feelingLabel: {
+    marginTop: 10,
+    fontSize: 11,
+    fontWeight: "600",
+    color: colors.ink,
+    textAlign: "center",
+    lineHeight: 14,
+  },
+  feelingHint: {
+    marginTop: 18,
+    fontSize: 13,
+    color: colors.inkSoft,
+    textAlign: "center",
+    lineHeight: 18,
+    paddingHorizontal: 4,
+  },
+  calendarPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.cardMint,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.cardMintEdge,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginBottom: 24,
+  },
+  calendarIconWell: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.mintIconWell,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  calendarTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.ink,
+  },
+  calendarSub: {
+    marginTop: 4,
+    fontSize: 12,
+    color: colors.inkSoft,
+  },
+  checkWell: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#E8F6F6",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  workoutSection: {
+    marginBottom: 20,
+  },
+  workoutSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+    paddingHorizontal: 2,
+  },
+  workoutSectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.ink,
+  },
+  durationPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.mintIconWell,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.cardMintEdge,
+  },
+  durationText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.ink,
+  },
+  workoutInnerCard: {
+    backgroundColor: colors.page,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: 18,
+    shadowColor: "#0F3D3D",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  workoutInnerTop: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 14,
+    gap: 12,
+  },
+  workoutPlanTitle: {
+    flex: 1,
+    fontSize: 17,
+    fontWeight: "700",
+    color: colors.ink,
+    lineHeight: 22,
+  },
+  workoutPlanMeta: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.inkMuted,
+  },
+  progressTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.progressTrack,
+    overflow: "hidden",
+    marginBottom: 16,
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 4,
+    backgroundColor: colors.progressFill,
+  },
+  exerciseList: {
+    marginHorizontal: -4,
+    marginBottom: 8,
+  },
+  exerciseRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  exerciseRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#EFF5F4",
+  },
+  exerciseRowInner: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  exerciseName: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: colors.ink,
+  },
+  exerciseNameDone: {
+    textDecorationLine: "line-through",
+    color: colors.inkSoft,
+  },
+  exerciseDetail: {
+    marginTop: 2,
+    fontSize: 12,
+    color: colors.inkSoft,
+  },
+  ctaButton: {
+    alignSelf: "center",
+    backgroundColor: colors.accentButton,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    marginTop: 8,
+  },
+  ctaButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  weekCard: {
+    backgroundColor: colors.cardMint,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.cardMintEdge,
+    padding: 18,
+  },
+  weekEncouragement: {
+    marginTop: 12,
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.progressFill,
+    lineHeight: 18,
+  },
+});

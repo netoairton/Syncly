@@ -14,6 +14,10 @@ export function Switch({ value = false, onValueChange, className }: any) {
   };
 
   useEffect(() => {
+    setIsOn(value);
+  }, [value]);
+
+  useEffect(() => {
     translateX.value = withTiming(isOn ? 20 : 0, { duration: 150 });
   }, [isOn, translateX]);
 

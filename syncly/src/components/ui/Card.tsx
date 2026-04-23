@@ -40,4 +40,3 @@ export function CardContent({ className, children, ...props }: any) {
     </View>
   );
 }
-``

@@ -13,7 +13,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Início",
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
@@ -21,7 +21,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="schedule"
         options={{
-          title: "Schedule",
+          title: "Agenda",
           tabBarIcon: ({ color, size }) => <Calendar color={color} size={size} />,
         }}
       />
@@ -29,7 +29,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="coach"
         options={{
-          title: "AI Coach",
+          title: "Treinador IA",
           tabBarIcon: ({ color, size }) => <Bot color={color} size={size} />,
         }}
       />
@@ -37,7 +37,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: "Perfil",
           tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
         }}
       />

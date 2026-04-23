@@ -12,7 +12,7 @@ export function ImageWithFallback({ src, alt, className, style }: any) {
   if (!src || error)
     return (
       <View className={cn("bg-gray-200 items-center justify-center", className)} style={style}>
-        <Text className="text-gray-500 text-xs">{alt ?? "Image unavailable"}</Text>
+        <Text className="text-gray-500 text-xs">{alt ?? "Imagem indisponível"}</Text>
       </View>
     );
 
